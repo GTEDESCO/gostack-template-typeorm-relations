@@ -37,7 +37,46 @@ class CreateProductService {
       throw new AppError('Customer not exists.');
     }
 
-    const order = await this.ordersRepository.create({ customer, products });
+    const checkNegativesValues = products.some(
+      product => product.quantity <= 0,
+    );
+
+    if (checkNegativesValues) {
+      throw new AppError('You cannot set quantity less than zero');
+    }
+
+    const productsFound = await this.productsRepository.findAllById(products);
+
+    if (productsFound.length !== products.length) {
+      throw new AppError(
+        'There is one or more products that is not located in database',
+      );
+    }
+
+    const isOutOfStock = productsFound.some(pf =>
+      products.some(ps => {
+        return pf.quantity - ps.quantity < 0;
+      }),
+    );
+
+    if (isOutOfStock) {
+      throw new AppError('There is one or more products that is out of stock');
+    }
+
+    const productsMapped = productsFound.map(productMap => ({
+      product_id: productMap.id,
+      price: productMap.price,
+      quantity:
+        products.find(productFind => productFind.id === productMap.id)
+          ?.quantity || 0,
+    }));
+
+    const order = await this.ordersRepository.create({
+      customer,
+      products: productsMapped,
+    });
+
+    // await this.productsRepository.updateQuantity();
 
     return order;
   }
