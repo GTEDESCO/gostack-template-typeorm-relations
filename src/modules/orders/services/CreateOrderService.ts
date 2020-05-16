@@ -76,7 +76,20 @@ class CreateProductService {
       products: productsMapped,
     });
 
-    // await this.productsRepository.updateQuantity();
+    await this.productsRepository.updateQuantity(
+      productsFound.map(productMap => {
+        const productFound = products.find(
+          productFind => productFind.id === productMap.id,
+        );
+
+        return {
+          id: productMap.id,
+          quantity: productFound
+            ? productMap.quantity - productFound.quantity
+            : productMap.quantity,
+        };
+      }),
+    );
 
     return order;
   }
