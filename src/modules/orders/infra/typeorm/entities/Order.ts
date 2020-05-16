@@ -21,7 +21,7 @@ class Order {
   customer_id: string;
 
   @ManyToOne(() => Customer, customer => customer.Orders)
-  @JoinColumn({ referencedColumnName: 'customer_id' })
+  @JoinColumn()
   customer: Customer;
 
   @OneToMany(() => OrdersProducts, ordersProducts => ordersProducts.order)

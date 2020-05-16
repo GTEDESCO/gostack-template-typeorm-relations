@@ -17,11 +17,11 @@ class OrdersProducts {
   id: string;
 
   @ManyToOne(() => Order, order => order.order_products)
-  @JoinColumn({ referencedColumnName: 'order_id' })
+  @JoinColumn()
   order: Order;
 
   @ManyToOne(() => Product, product => product.order_products)
-  @JoinColumn({ referencedColumnName: 'product_id' })
+  @JoinColumn()
   product: Product;
 
   @Column()
