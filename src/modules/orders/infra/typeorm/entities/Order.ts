@@ -3,7 +3,8 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  OneToOne,
+  Column,
+  ManyToOne,
   JoinColumn,
   OneToMany,
 } from 'typeorm';
@@ -16,8 +17,14 @@ class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column()
+  customer_id: string;
+
+  @ManyToOne(() => Customer, customer => customer.Orders)
+  @JoinColumn({ referencedColumnName: 'customer_id' })
   customer: Customer;
 
+  @OneToMany(() => OrdersProducts, ordersProducts => ordersProducts.order)
   order_products: OrdersProducts[];
 
   @CreateDateColumn()
